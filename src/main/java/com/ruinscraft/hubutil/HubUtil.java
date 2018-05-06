@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,6 +48,13 @@ public class HubUtil extends JavaPlugin implements Listener {
 		if (player.hasPermission("group.vip1")) {
 			player.setAllowFlight(true);
 		}
+
+		event.setJoinMessage(null);
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		event.setQuitMessage(null);
 	}
 
 	@EventHandler
@@ -58,8 +66,12 @@ public class HubUtil extends JavaPlugin implements Listener {
 			teleportToSpawn(player);
 			return;
 		}
-		
+
 		Block blockUnderPlayer = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+
+		if (blockUnderPlayer == null || blockUnderPlayer.getType() == Material.AIR) {
+			return;
+		}
 
 		if ((blockUnderPlayer.getType() == Material.STAINED_GLASS) && (blockUnderPlayer.getData() == 3)) {
 			if (!player.getInventory().contains(Material.DIAMOND_SWORD)) {
@@ -89,8 +101,8 @@ public class HubUtil extends JavaPlugin implements Listener {
 			return;
 		}
 
-		Player damager = (Player)event.getDamager();
-		Player damagee = (Player)event.getEntity();
+		Player damager = (Player) event.getDamager();
+		Player damagee = (Player) event.getEntity();
 
 		if (!damager.getInventory().contains(Material.DIAMOND_SWORD)) {
 			event.setCancelled(true);
@@ -102,4 +114,5 @@ public class HubUtil extends JavaPlugin implements Listener {
 			return;
 		}
 	}
+
 }
