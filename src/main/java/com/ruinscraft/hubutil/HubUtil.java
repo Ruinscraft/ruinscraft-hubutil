@@ -3,6 +3,7 @@ package com.ruinscraft.hubutil;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -92,6 +93,8 @@ public class HubUtil extends JavaPlugin implements Listener {
 		player.setFlying(false);
 
 		event.setJoinMessage(null);
+		
+		player.setGameMode(GameMode.ADVENTURE);
 	}
 
 	@EventHandler
