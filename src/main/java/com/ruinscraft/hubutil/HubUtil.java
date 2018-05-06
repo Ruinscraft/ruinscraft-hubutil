@@ -5,12 +5,12 @@ import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -106,9 +106,14 @@ public class HubUtil extends JavaPlugin implements Listener {
 			teleportToSpawn(player);
 			return;
 		}
-
+		
 		if (isWithinRegion(player, "portals")) {
 			teleportToSpawn(player);
+			
+			if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
+				setPlayerInventory(player);
+			}
+			
 			return;
 		}
 		
@@ -120,33 +125,32 @@ public class HubUtil extends JavaPlugin implements Listener {
 			if (player.isFlying()) {
 				player.setFlying(false);
 			}
-		} else {
-			if (player.hasPermission("group.vip1")) {
-				player.setAllowFlight(true);
+			
+			if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
+				setPlayerInventory(player);
 			}
-		}
-		
-		Block blockUnderPlayer = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
-
-		if (blockUnderPlayer == null || blockUnderPlayer.getType() == Material.AIR) {
+			
 			return;
 		}
-
-		if ((blockUnderPlayer.getType() == Material.STAINED_GLASS) && (blockUnderPlayer.getData() == 3)) {
+		
+		if (player.getLocation().getY() < 57) {
 			if (!player.getInventory().contains(Material.DIAMOND_SWORD)) {
 				player.getInventory().clear();
 				player.getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD));
-				player.setAllowFlight(false);
-				player.setFlying(false);
 			}
+			
+			player.setAllowFlight(false);
+			player.setFlying(false);
+			
+			return;
 		}
 
-		else if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
+		if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
 			setPlayerInventory(player);
-
-			if (player.hasPermission("group.vip1")) {
-				player.setAllowFlight(true);
-			}
+		}
+		
+		if (player.hasPermission("group.vip1")) {
+			player.setAllowFlight(true);
 		}
 	}
 
@@ -172,6 +176,16 @@ public class HubUtil extends JavaPlugin implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+	}
+	
+	@EventHandler
+	public void onDropItemEvent(PlayerDropItemEvent event) {
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPickupItemEvent(EntityPickupItemEvent event) {
+		event.setCancelled(true);
 	}
 
 }
