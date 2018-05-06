@@ -88,6 +88,8 @@ public class HubUtil extends JavaPlugin implements Listener {
 		if (player.hasPermission("group.vip1")) {
 			player.setAllowFlight(true);
 		}
+		
+		player.setFlying(false);
 
 		event.setJoinMessage(null);
 	}
