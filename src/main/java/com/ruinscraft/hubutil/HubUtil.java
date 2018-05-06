@@ -1,5 +1,7 @@
 package com.ruinscraft.hubutil;
 
+import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,13 +15,51 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HubUtil extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
+	}
+
+	// https://bukkit.org/threads/solved-worldguard-get-the-region-a-player-is-standing-in.50800/
+	private WorldGuardPlugin getWorldGuard() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+		// WorldGuard may not be loaded
+		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+			return null; // Maybe you want throw an exception instead
+		}
+
+		return (WorldGuardPlugin) plugin;
+	}
+
+	public boolean isWithinRegion(Player player, String region) { 
+		return isWithinRegion(player.getLocation(), region); 
+	}
+
+	public boolean isWithinRegion(Location loc, String region) {
+		WorldGuardPlugin guard = getWorldGuard();
+		Vector v = toVector(loc);
+		RegionManager manager = guard.getRegionManager(loc.getWorld());
+		ApplicableRegionSet set = manager.getApplicableRegions(v);
+
+		for (ProtectedRegion each : set) {
+			if (each.getId().equalsIgnoreCase(region)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public Location getSpawn() {
@@ -67,6 +107,25 @@ public class HubUtil extends JavaPlugin implements Listener {
 			return;
 		}
 
+		if (isWithinRegion(player, "portals")) {
+			teleportToSpawn(player);
+			return;
+		}
+		
+		if (isWithinRegion(player, "parkour")) {
+			if (player.getAllowFlight()) {
+				player.setAllowFlight(false);
+			}
+			
+			if (player.isFlying()) {
+				player.setFlying(false);
+			}
+		} else {
+			if (player.hasPermission("group.vip1")) {
+				player.setAllowFlight(true);
+			}
+		}
+		
 		Block blockUnderPlayer = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
 
 		if (blockUnderPlayer == null || blockUnderPlayer.getType() == Material.AIR) {
