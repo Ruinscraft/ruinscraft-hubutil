@@ -90,6 +90,8 @@ public class HubUtil extends JavaPlugin implements Listener {
 			player.setAllowFlight(true);
 		}
 		
+		player.setCollidable(false);
+		
 		player.setFlying(false);
 
 		event.setJoinMessage(null);
