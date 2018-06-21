@@ -3,6 +3,7 @@ package com.ruinscraft.hubutil;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,13 +90,13 @@ public class HubUtil extends JavaPlugin implements Listener {
 		if (player.hasPermission("group.vip1")) {
 			player.setAllowFlight(true);
 		}
-		
+
 		player.setCollidable(false);
-		
+
 		player.setFlying(false);
 
 		event.setJoinMessage(null);
-		
+
 		player.setGameMode(GameMode.ADVENTURE);
 	}
 
@@ -113,49 +114,52 @@ public class HubUtil extends JavaPlugin implements Listener {
 			teleportToSpawn(player);
 			return;
 		}
-		
+
 		if (isWithinRegion(player, "portals")) {
 			teleportToSpawn(player);
-			
+
 			if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
 				setPlayerInventory(player);
 			}
-			
+
 			return;
 		}
-		
+
 		if (isWithinRegion(player, "parkour")) {
 			if (player.getAllowFlight()) {
 				player.setAllowFlight(false);
 			}
-			
+
 			if (player.isFlying()) {
 				player.setFlying(false);
 			}
-			
+
 			if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
 				setPlayerInventory(player);
 			}
-			
+
 			return;
 		}
-		
+
 		if (player.getLocation().getY() < 57) {
 			if (!player.getInventory().contains(Material.DIAMOND_SWORD)) {
+				player.sendMessage(ChatColor.RED + "You've entered a PvP zone! " + 
+						"Be prepared to fight at any time.");
 				player.getInventory().clear();
 				player.getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD));
 			}
-			
+
 			player.setAllowFlight(false);
 			player.setFlying(false);
-			
+
 			return;
 		}
 
 		if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
+			player.sendMessage(ChatColor.GREEN + "You've left the PvP zone.");
 			setPlayerInventory(player);
 		}
-		
+
 		if (player.hasPermission("group.vip1")) {
 			player.setAllowFlight(true);
 		}
@@ -184,12 +188,12 @@ public class HubUtil extends JavaPlugin implements Listener {
 			return;
 		}
 	}
-	
+
 	@EventHandler
 	public void onDropItemEvent(PlayerDropItemEvent event) {
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void onPickupItemEvent(EntityPickupItemEvent event) {
 		event.setCancelled(true);
