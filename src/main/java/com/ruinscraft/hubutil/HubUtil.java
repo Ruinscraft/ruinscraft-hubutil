@@ -9,9 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -30,6 +32,7 @@ public class HubUtil extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		saveDefaultConfig();
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
@@ -202,6 +205,16 @@ public class HubUtil extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPickupItemEvent(EntityPickupItemEvent event) {
 		event.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		if (!(FilterUtils.isAppropriate(
+				event.getMessage(), getConfig().getString("webpurify-api-key")))) {
+			event.getPlayer().sendMessage(
+					ChatColor.RED + "Please do not use inappropriate language!");
+			event.setCancelled(true);
+		}
 	}
 
 }
