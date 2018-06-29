@@ -110,12 +110,17 @@ public class HubUtil extends JavaPlugin implements Listener {
 		Player player = event.getPlayer();
 		Location location = player.getLocation();
 
+		if (player.getGameMode() == GameMode.SPECTATOR ||
+				player.getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+
 		if (location.getY() < 32.0D) {
 			teleportToSpawn(player);
 			return;
 		}
 
-		if (isWithinRegion(player, "portals")) {
+		if (isWithinRegion(player, "portals") || isWithinRegion(player, "eventportal")) {
 			teleportToSpawn(player);
 
 			if (player.getInventory().contains(Material.DIAMOND_SWORD)) {
