@@ -106,7 +106,7 @@ public class HubUtil extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
-		teleportToSpawn(event.getPlayer());
+		event.setRespawnLocation(getSpawn());
 	}
 
 	@EventHandler
