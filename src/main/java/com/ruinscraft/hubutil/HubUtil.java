@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -109,6 +110,11 @@ public class HubUtil extends JavaPlugin implements Listener {
 				}
 			}, 40L);
 		}
+	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event) {
+		event.setRespawnLocation(getSpawn());
 	}
 
 	@EventHandler
