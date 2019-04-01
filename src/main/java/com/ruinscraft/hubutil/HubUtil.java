@@ -101,6 +101,14 @@ public class HubUtil extends JavaPlugin implements Listener {
 		event.setJoinMessage(null);
 
 		player.setGameMode(GameMode.ADVENTURE);
+
+		if (System.currentTimeMillis() <= this.getConfig().getLong("aprilfoolsend")) {
+			Bukkit.getScheduler().runTaskLater(this, () -> {
+				for (String string : this.getConfig().getStringList("aprilfoolsmsg")) {
+					player.sendMessage(ChatColor.translateAlternateColorCodes('&', string));
+				}
+			}, 40L);
+		}
 	}
 
 	@EventHandler
