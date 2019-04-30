@@ -1,3 +1,5 @@
 name: ${name}
 version: ${project.version}
 main: ${mainClass}
+
+api-version: 1.13
