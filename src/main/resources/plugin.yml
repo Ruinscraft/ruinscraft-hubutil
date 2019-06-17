@@ -3,3 +3,6 @@ version: ${project.version}
 main: ${mainClass}
 
 api-version: 1.13
+
+commands:
+  spawn:
